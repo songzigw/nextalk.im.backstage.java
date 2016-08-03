@@ -1,2 +1,2 @@
-# nextalk.im.server.java
-NexTalk IM Server API in Java
+# nextalk.im.backstage.java
+NexTalk IM backstage server API in Java
