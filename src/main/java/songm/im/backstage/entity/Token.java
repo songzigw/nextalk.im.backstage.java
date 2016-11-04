@@ -27,7 +27,7 @@ import java.io.Serializable;
  * @version 0.1
  * 
  */
-public class Token extends Entity implements Serializable {
+public class Token implements Serializable {
 
     private static final long serialVersionUID = 1356174819334484641L;
 

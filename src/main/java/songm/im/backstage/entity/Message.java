@@ -26,7 +26,7 @@ import java.io.Serializable;
  * @version 0.1
  *
  */
-public class Message extends Entity implements Serializable {
+public class Message implements Serializable {
 
     private static final long serialVersionUID = 3649240217021961002L;
 

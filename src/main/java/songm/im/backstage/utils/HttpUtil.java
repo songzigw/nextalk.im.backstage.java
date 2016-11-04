@@ -1,4 +1,20 @@
-﻿package songm.im.backstage.utils;
+﻿/*
+ * Copyright [2016] [zhangsong <songm.cn>].
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+package songm.im.backstage.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -34,12 +50,10 @@ public class HttpUtil {
         try {
             sslCtx = SSLContext.getInstance("TLS");
             X509TrustManager tm = new X509TrustManager() {
-                public void checkClientTrusted(X509Certificate[] xcs,
-                        String string) throws CertificateException {
+                public void checkClientTrusted(X509Certificate[] xcs, String string) throws CertificateException {
                 }
 
-                public void checkServerTrusted(X509Certificate[] xcs,
-                        String string) throws CertificateException {
+                public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {
                 }
 
                 public X509Certificate[] getAcceptedIssuers() {
@@ -60,49 +74,44 @@ public class HttpUtil {
 
         });
 
-        HttpsURLConnection
-                .setDefaultSSLSocketFactory(sslCtx.getSocketFactory());
+        HttpsURLConnection.setDefaultSSLSocketFactory(sslCtx.getSocketFactory());
     }
 
-    public static void setBodyParameter(StringBuilder sb, HttpURLConnection conn)
-            throws ApiException {
+    public static void setBodyParameter(StringBuilder sb, HttpURLConnection conn) throws ApiException {
         try {
             _setBodyParameter(sb, conn);
         } catch (IOException e) {
-            throw new ApiException(ErrorCode.AAA, "HTTP设置错误", e);
+            throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
         }
     }
 
     // 设置body体
-    private static void _setBodyParameter(StringBuilder sb,
-            HttpURLConnection conn) throws IOException {
+    private static void _setBodyParameter(StringBuilder sb, HttpURLConnection conn) throws IOException {
         DataOutputStream out = new DataOutputStream(conn.getOutputStream());
         out.writeBytes(sb.toString());
         out.flush();
         out.close();
     }
 
-    public static HttpURLConnection CreatePostHttpConnection(String appKey,
-            String appSecret, String uri) throws ApiException {
+    public static HttpURLConnection CreatePostHttpConnection(String appKey, String appSecret, String uri)
+            throws ApiException {
         try {
             return _CreatePostHttpConnection(appKey, appSecret, uri);
         } catch (MalformedURLException e) {
-            throw new ApiException(ErrorCode.AAA, "HTTP设置错误", e);
+            throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
         } catch (ProtocolException e) {
-            throw new ApiException(ErrorCode.AAA, "HTTP设置错误", e);
+            throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
         } catch (IOException e) {
-            throw new ApiException(ErrorCode.AAA, "HTTP设置错误", e);
+            throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
         }
     }
 
     // 添加签名header
-    private static HttpURLConnection _CreatePostHttpConnection(String appKey,
-            String appSecret, String uri) throws MalformedURLException,
-            IOException, ProtocolException {
+    private static HttpURLConnection _CreatePostHttpConnection(String appKey, String appSecret, String uri)
+            throws MalformedURLException, IOException, ProtocolException {
         String nonce = String.valueOf(Math.random() * 1000000);
         String timestamp = String.valueOf(System.currentTimeMillis());
-        StringBuilder toSign = new StringBuilder(appSecret).append(nonce)
-                .append(timestamp);
+        StringBuilder toSign = new StringBuilder(appSecret).append(nonce).append(timestamp);
         String sign = CodeUtils.sha1(toSign.toString());
 
         URL url = new URL(uri);
@@ -118,14 +127,12 @@ public class HttpUtil {
         conn.setRequestProperty(NONCE, nonce);
         conn.setRequestProperty(TIMESTAMP, timestamp);
         conn.setRequestProperty(SIGNATURE, sign);
-        conn.setRequestProperty("Content-Type",
-                "application/x-www-form-urlencoded");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
         return conn;
     }
 
-    public static byte[] readInputStream(InputStream inStream)
-            throws IOException {
+    public static byte[] readInputStream(InputStream inStream) throws IOException {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len = 0;
@@ -138,17 +145,15 @@ public class HttpUtil {
         return data;
     }
 
-    public static HttpResult returnResult(HttpURLConnection conn)
-            throws ApiException {
+    public static HttpResult returnResult(HttpURLConnection conn) throws ApiException {
         try {
             return _returnResult(conn);
         } catch (IOException e) {
-            throw new ApiException(ErrorCode.AAA, "HTTP设置错误", e);
+            throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
         }
     }
 
-    private static HttpResult _returnResult(HttpURLConnection conn)
-            throws IOException {
+    private static HttpResult _returnResult(HttpURLConnection conn) throws IOException {
         String result;
         InputStream input = null;
         if (conn.getResponseCode() == 200) {

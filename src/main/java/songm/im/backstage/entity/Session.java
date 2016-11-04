@@ -29,7 +29,7 @@ import java.util.Map;
  * @version 0.1
  * 
  */
-public class Session extends Entity implements Serializable {
+public class Session implements Serializable {
 
     private static final long serialVersionUID = 1689305158269907021L;
 

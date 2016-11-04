@@ -26,7 +26,7 @@ import java.io.Serializable;
  * @version 0.1
  *
  */
-public class Entity implements Serializable {
+public class Result<T> implements Serializable {
 
     private static final long serialVersionUID = -3895996346260053766L;
 
@@ -34,8 +34,18 @@ public class Entity implements Serializable {
     
     private String errorCode;
 
-    public Entity() {
+    private T data;
+    
+    public Result() {
         succeed = true;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
     }
 
     public Boolean getSucceed() {
