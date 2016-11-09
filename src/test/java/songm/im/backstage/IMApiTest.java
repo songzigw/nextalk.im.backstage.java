@@ -1,7 +1,10 @@
 package songm.im.backstage;
 
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import songm.im.backstage.entity.Token;
@@ -19,15 +22,29 @@ public class IMApiTest {
     
     private IMApi api;
     
-    @Before
-    public void setUp() throws Exception {
+    public IMApiTest() {
         IMApi.init(key, secret, uri);
         api = IMApi.getInstance();
     }
     
+    @BeforeClass
+    public static void beforeClass() {
+        
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        
+    }
+    
+    @Before
+    public void setUp() throws Exception {
+        
+    }
+    
     @After
     public void tearDown() throws Exception {
-        System.out.println("==========");
+        
     }
     
     @Test
@@ -39,10 +56,12 @@ public class IMApiTest {
         try {
             t = api.getToken(uid, nick, avatar);
         } catch (ApiException e) {
+            e.printStackTrace();
         }
         if (t != null) {
-            System.out.println(t.getId());
+            System.out.println(t.toString());
         }
+        Assert.assertNotNull(t);
     }
     
 }

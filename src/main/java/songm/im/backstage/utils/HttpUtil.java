@@ -40,7 +40,7 @@ import songm.im.backstage.HttpResult;
 
 public class HttpUtil {
 
-    private static final String APPKEY = "SM-App-Key";
+    private static final String APPKEY = "SM-Server-Key";
     private static final String NONCE = "SM-Nonce";
     private static final String TIMESTAMP = "SM-Timestamp";
     private static final String SIGNATURE = "SM-Signature";
@@ -77,26 +77,10 @@ public class HttpUtil {
         HttpsURLConnection.setDefaultSSLSocketFactory(sslCtx.getSocketFactory());
     }
 
-    public static void setBodyParameter(StringBuilder sb, HttpURLConnection conn) throws ApiException {
-        try {
-            _setBodyParameter(sb, conn);
-        } catch (IOException e) {
-            throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
-        }
-    }
-
-    // 设置body体
-    private static void _setBodyParameter(StringBuilder sb, HttpURLConnection conn) throws IOException {
-        DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-        out.writeBytes(sb.toString());
-        out.flush();
-        out.close();
-    }
-
-    public static HttpURLConnection CreatePostHttpConnection(String appKey, String appSecret, String uri)
+    public static HttpURLConnection createPostHttpConnection(String appKey, String appSecret, String uri)
             throws ApiException {
         try {
-            return _CreatePostHttpConnection(appKey, appSecret, uri);
+            return _createPostHttpConnection(appKey, appSecret, uri);
         } catch (MalformedURLException e) {
             throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
         } catch (ProtocolException e) {
@@ -106,8 +90,17 @@ public class HttpUtil {
         }
     }
 
-    // 添加签名header
-    private static HttpURLConnection _CreatePostHttpConnection(String appKey, String appSecret, String uri)
+    /**
+     * 添加签名header
+     * @param appKey
+     * @param appSecret
+     * @param uri
+     * @return
+     * @throws MalformedURLException
+     * @throws IOException
+     * @throws ProtocolException
+     */
+    private static HttpURLConnection _createPostHttpConnection(String appKey, String appSecret, String uri)
             throws MalformedURLException, IOException, ProtocolException {
         String nonce = String.valueOf(Math.random() * 1000000);
         String timestamp = String.valueOf(System.currentTimeMillis());
@@ -130,6 +123,24 @@ public class HttpUtil {
         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
         return conn;
+    }
+    
+    public static void setBodyParameter(StringBuilder sb, HttpURLConnection conn) throws ApiException {
+        if (conn.getRequestMethod().equals("GET")) {
+            return;
+        }
+        try {
+            _setBodyParameter(sb, conn);
+        } catch (IOException e) {
+            throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
+        }
+    }
+
+    private static void _setBodyParameter(StringBuilder sb, HttpURLConnection conn) throws IOException {
+        DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+        out.writeBytes(sb.toString());
+        out.flush();
+        out.close();
     }
 
     public static byte[] readInputStream(InputStream inStream) throws IOException {
@@ -163,5 +174,19 @@ public class HttpUtil {
         }
         result = new String(readInputStream(input));
         return new HttpResult(conn.getResponseCode(), result);
+    }
+
+    public static void setConnection(String key, String value, HttpURLConnection conn) {
+        if (key.equals("method")) {
+            try {
+                conn.setRequestMethod(value);
+            } catch (ProtocolException e) {
+                throw new RuntimeException(e);
+            }
+        } else if (key.equals("caches")) {
+            conn.setUseCaches(Boolean.parseBoolean(value));
+        } else if (key.equals("timeout")) {
+            conn.setConnectTimeout(Integer.parseInt(value));
+        }
     }
 }

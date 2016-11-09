@@ -65,13 +65,15 @@ public class IMApi {
      * @throws ApiException
      */
     public Token getToken(String uid, String nick, String avatar) throws ApiException {
-        HttpURLConnection conn = HttpUtil.CreatePostHttpConnection(key, secret, uri + "/api/token");
-
         StringBuilder sb = new StringBuilder();
         sb.append("uid=").append(uid);
         sb.append("&nick=").append(nick);
         sb.append("&avatar").append(avatar);
-        HttpUtil.setBodyParameter(sb, conn);
+        
+        String url = uri + "/token?" + sb.toString(); 
+        HttpURLConnection conn = HttpUtil.createPostHttpConnection(key, secret, url);
+        HttpUtil.setConnection("method", "GET", conn);
+        // HttpUtil.setBodyParameter(sb, conn);
 
         HttpResult shr = HttpUtil.returnResult(conn);
         if (shr.getHttpCode() != 200) {
@@ -80,7 +82,7 @@ public class IMApi {
         Type type = new TypeToken<Result<Token>>() {}.getType();
         Result<Token> r = JsonUtils.fromJson(shr.getResult(), type);
         if (!r.getSucceed()) {
-            throw new ApiException(ErrorCode.valueOf(r.getErrorCode()), r.getErrorCode());
+            throw new ApiException(ErrorCode.valueOf(r.getErrorCode()), r.getErrorDesc());
         }
         return r.getData();
     }

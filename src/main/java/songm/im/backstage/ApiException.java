@@ -46,6 +46,9 @@ public class ApiException extends Exception {
 
     public static enum ErrorCode {
         /** 请求异常 */
-        REQUEST
+        REQUEST,
+        
+        /** API请求授权失败 */
+        AUTH_FAILURE,
     }
 }

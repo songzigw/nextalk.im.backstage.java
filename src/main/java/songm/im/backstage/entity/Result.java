@@ -33,6 +33,8 @@ public class Result<T> implements Serializable {
     private Boolean succeed;
     
     private String errorCode;
+    
+    private String errorDesc;
 
     private T data;
     
@@ -65,5 +67,13 @@ public class Result<T> implements Serializable {
             succeed = false;
         }
         this.errorCode = errorCode;
+    }
+
+    public String getErrorDesc() {
+        return errorDesc;
+    }
+
+    public void setErrorDesc(String errorDesc) {
+        this.errorDesc = errorDesc;
     }
 }
