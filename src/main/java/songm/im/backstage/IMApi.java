@@ -20,16 +20,17 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 
 import com.google.gson.reflect.TypeToken;
-import songm.im.backstage.entity.Result;
 
 import songm.im.backstage.ApiException.ErrorCode;
+import songm.im.backstage.entity.Result;
 import songm.im.backstage.entity.Token;
+import songm.im.backstage.utils.CodeUtils;
 import songm.im.backstage.utils.HttpUtil;
 import songm.im.backstage.utils.JsonUtils;
 
 public class IMApi {
 
-    // private static final String UTF8 = "utf-8";
+    private static final String ENCODING = "utf-8";
     private static IMApi instance;
 
     private String uri;
@@ -67,8 +68,8 @@ public class IMApi {
     public Token getToken(String uid, String nick, String avatar) throws ApiException {
         StringBuilder sb = new StringBuilder();
         sb.append("uid=").append(uid);
-        sb.append("&nick=").append(nick);
-        sb.append("&avatar").append(avatar);
+        sb.append("&nick=").append(CodeUtils.encodURL(nick, ENCODING));
+        sb.append("&avatar").append(CodeUtils.encodURL(avatar, ENCODING));
         
         String url = uri + "/token?" + sb.toString(); 
         HttpURLConnection conn = HttpUtil.createPostHttpConnection(key, secret, url);

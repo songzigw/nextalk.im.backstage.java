@@ -50,7 +50,7 @@ public class IMApiTest {
     @Test
     public void testGetToken() {
         String uid = "10000";
-        String nick = "zhangsong";
+        String nick = "song";
         String avatar = "";
         Token t = null;
         try {
@@ -64,4 +64,35 @@ public class IMApiTest {
         Assert.assertNotNull(t);
     }
     
+    @Test
+    public void testGetTokenUid10001() {
+        String uid = "10001";
+        String nick = "张松1";
+        String avatar = "1";
+        Token t = null;
+        try {
+            t = api.getToken(uid, nick, avatar);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        if (t != null) {
+            System.out.println(t.toString());
+        }
+    }
+    
+    @Test
+    public void testGetTokenUid10002() {
+        String uid = "10002";
+        String nick = "张松2";
+        String avatar = "2";
+        Token t = null;
+        try {
+            t = api.getToken(uid, nick, avatar);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        if (t != null) {
+            System.out.println(t.toString());
+        }
+    }
 }

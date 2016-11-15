@@ -1,5 +1,8 @@
 package songm.im.backstage.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -103,4 +106,21 @@ public class CodeUtils {
         return bytes;
     }
 
+    public static String encodURL(String s, String enc) {
+        if (s == null) return "";
+        try {
+            return URLEncoder.encode(s, enc);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static String decodURL(String s, String enc) {
+        if (s == null) return "";
+        try {
+            return URLDecoder.decode(s, enc);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
