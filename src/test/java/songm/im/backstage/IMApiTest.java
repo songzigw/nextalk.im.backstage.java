@@ -16,7 +16,7 @@ public class IMApiTest {
     // System.setProperty("javax.net.ssl.trustStorePassword", "ninety-nine");
     // System.setProperty("org.jboss.security.ignoreHttpsHost", "true");
 
-    private static String uri = "http://127.0.0.1:8080/songm.im/api";
+    private static String uri = "http://127.0.0.1:17183/backstage";
     private static String key = "zhangsong";
     private static String secret = "1234567";
     

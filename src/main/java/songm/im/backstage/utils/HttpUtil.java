@@ -50,10 +50,12 @@ public class HttpUtil {
         try {
             sslCtx = SSLContext.getInstance("TLS");
             X509TrustManager tm = new X509TrustManager() {
-                public void checkClientTrusted(X509Certificate[] xcs, String string) throws CertificateException {
+                public void checkClientTrusted(X509Certificate[] xcs,
+                        String string) throws CertificateException {
                 }
 
-                public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {
+                public void checkServerTrusted(X509Certificate[] xcs,
+                        String string) throws CertificateException {
                 }
 
                 public X509Certificate[] getAcceptedIssuers() {
@@ -74,11 +76,12 @@ public class HttpUtil {
 
         });
 
-        HttpsURLConnection.setDefaultSSLSocketFactory(sslCtx.getSocketFactory());
+        HttpsURLConnection
+                .setDefaultSSLSocketFactory(sslCtx.getSocketFactory());
     }
 
-    public static HttpURLConnection createPostHttpConnection(String appKey, String appSecret, String uri)
-            throws ApiException {
+    public static HttpURLConnection createPostHttpConnection(String appKey,
+            String appSecret, String uri) throws ApiException {
         try {
             return _createPostHttpConnection(appKey, appSecret, uri);
         } catch (MalformedURLException e) {
@@ -92,6 +95,7 @@ public class HttpUtil {
 
     /**
      * 添加签名header
+     * 
      * @param appKey
      * @param appSecret
      * @param uri
@@ -100,11 +104,13 @@ public class HttpUtil {
      * @throws IOException
      * @throws ProtocolException
      */
-    private static HttpURLConnection _createPostHttpConnection(String appKey, String appSecret, String uri)
+    private static HttpURLConnection _createPostHttpConnection(String appKey,
+            String appSecret, String uri)
             throws MalformedURLException, IOException, ProtocolException {
         String nonce = String.valueOf(Math.random() * 1000000);
         String timestamp = String.valueOf(System.currentTimeMillis());
-        StringBuilder toSign = new StringBuilder(appSecret).append(nonce).append(timestamp);
+        StringBuilder toSign = new StringBuilder(appSecret).append(nonce)
+                .append(timestamp);
         String sign = CodeUtils.sha1(toSign.toString());
 
         URL url = new URL(uri);
@@ -120,30 +126,34 @@ public class HttpUtil {
         conn.setRequestProperty(NONCE, nonce);
         conn.setRequestProperty(TIMESTAMP, timestamp);
         conn.setRequestProperty(SIGNATURE, sign);
-        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setRequestProperty("Content-Type",
+                "application/x-www-form-urlencoded");
 
         return conn;
     }
-    
-    public static void setBodyParameter(StringBuilder sb, HttpURLConnection conn) throws ApiException {
+
+    public static void setBodyParameter(StringBuilder sb,
+            HttpURLConnection conn) throws ApiException {
         if (conn.getRequestMethod().equals("GET")) {
             return;
         }
         try {
             _setBodyParameter(sb, conn);
         } catch (IOException e) {
-            throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
+            throw new ApiException(ErrorCode.REQUEST, "Httpd", e);
         }
     }
 
-    private static void _setBodyParameter(StringBuilder sb, HttpURLConnection conn) throws IOException {
+    private static void _setBodyParameter(StringBuilder sb,
+            HttpURLConnection conn) throws IOException {
         DataOutputStream out = new DataOutputStream(conn.getOutputStream());
         out.writeBytes(sb.toString());
         out.flush();
         out.close();
     }
 
-    public static byte[] readInputStream(InputStream inStream) throws IOException {
+    public static byte[] readInputStream(InputStream inStream)
+            throws IOException {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len = 0;
@@ -156,15 +166,17 @@ public class HttpUtil {
         return data;
     }
 
-    public static HttpResult returnResult(HttpURLConnection conn) throws ApiException {
+    public static HttpResult returnResult(HttpURLConnection conn)
+            throws ApiException {
         try {
             return _returnResult(conn);
         } catch (IOException e) {
-            throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
+            throw new ApiException(ErrorCode.REQUEST, "Httpd", e);
         }
     }
 
-    private static HttpResult _returnResult(HttpURLConnection conn) throws IOException {
+    private static HttpResult _returnResult(HttpURLConnection conn)
+            throws IOException {
         String result;
         InputStream input = null;
         if (conn.getResponseCode() == 200) {
@@ -176,7 +188,8 @@ public class HttpUtil {
         return new HttpResult(conn.getResponseCode(), result);
     }
 
-    public static void setConnection(String key, String value, HttpURLConnection conn) {
+    public static void setConnection(String key, String value,
+            HttpURLConnection conn) {
         if (key.equals("method")) {
             try {
                 conn.setRequestMethod(value);

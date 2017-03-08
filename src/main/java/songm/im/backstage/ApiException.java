@@ -25,13 +25,14 @@ public class ApiException extends Exception {
     private String description;
 
     public ApiException(ErrorCode errorCode, String description) {
-        super(errorCode + ":" + description);
+        super(errorCode + ": " + description);
         this.errorCode = errorCode;
         this.description = description;
     }
 
-    public ApiException(ErrorCode errorCode, String description, Throwable cause) {
-        super(errorCode + ":" + description, cause);
+    public ApiException(ErrorCode errorCode, String description,
+            Throwable cause) {
+        super(errorCode + ": " + description, cause);
         this.errorCode = errorCode;
         this.description = description;
     }
@@ -47,8 +48,8 @@ public class ApiException extends Exception {
     public static enum ErrorCode {
         /** 请求异常 */
         REQUEST,
-        
-        /** API请求授权失败 */
-        AUTH_FAILURE,
+
+        /** API签名失败 */
+        SIGN_FAILURE,
     }
 }

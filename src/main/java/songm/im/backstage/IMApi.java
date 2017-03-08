@@ -77,13 +77,13 @@ public class IMApi {
         StringBuilder sb = new StringBuilder();
         sb.append("uid=").append(uid);
         sb.append("&nick=").append(CodeUtils.encodURL(nick, ENCODING));
-        sb.append("&avatar").append(CodeUtils.encodURL(avatar, ENCODING));
+        sb.append("&avatar=").append(CodeUtils.encodURL(avatar, ENCODING));
 
         String url = uri + "/token?" + sb.toString();
-        HttpURLConnection conn = HttpUtil.createPostHttpConnection(key, secret,
-                url);
+        HttpURLConnection conn = HttpUtil.createPostHttpConnection(
+                key, secret, url);
         HttpUtil.setConnection("method", "GET", conn);
-        // HttpUtil.setBodyParameter(sb, conn);
+        HttpUtil.setBodyParameter(sb, conn);
 
         HttpResult shr = HttpUtil.returnResult(conn);
         if (shr.getHttpCode() != 200) {
