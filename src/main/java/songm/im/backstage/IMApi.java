@@ -28,6 +28,12 @@ import songm.im.backstage.utils.CodeUtils;
 import songm.im.backstage.utils.HttpUtil;
 import songm.im.backstage.utils.JsonUtils;
 
+/**
+ * API
+ * 
+ * @author zhangsong
+ *
+ */
 public class IMApi {
 
     private static final String ENCODING = "utf-8";
@@ -41,7 +47,8 @@ public class IMApi {
         if (instance == null) {
             instance = new IMApi();
         }
-        if (instance.uri == null || instance.key == null || instance.secret == null) {
+        if (instance.uri == null || instance.key == null
+                || instance.secret == null) {
             throw new IllegalArgumentException("初始化参数错误");
         }
         return instance;
@@ -65,14 +72,16 @@ public class IMApi {
      * @return
      * @throws ApiException
      */
-    public Token getToken(String uid, String nick, String avatar) throws ApiException {
+    public Token getToken(String uid, String nick, String avatar)
+            throws ApiException {
         StringBuilder sb = new StringBuilder();
         sb.append("uid=").append(uid);
         sb.append("&nick=").append(CodeUtils.encodURL(nick, ENCODING));
         sb.append("&avatar").append(CodeUtils.encodURL(avatar, ENCODING));
-        
-        String url = uri + "/token?" + sb.toString(); 
-        HttpURLConnection conn = HttpUtil.createPostHttpConnection(key, secret, url);
+
+        String url = uri + "/token?" + sb.toString();
+        HttpURLConnection conn = HttpUtil.createPostHttpConnection(key, secret,
+                url);
         HttpUtil.setConnection("method", "GET", conn);
         // HttpUtil.setBodyParameter(sb, conn);
 
@@ -80,10 +89,12 @@ public class IMApi {
         if (shr.getHttpCode() != 200) {
             throw new ApiException(ErrorCode.REQUEST, "请求异常");
         }
-        Type type = new TypeToken<Result<Token>>() {}.getType();
+        Type type = new TypeToken<Result<Token>>() {
+        }.getType();
         Result<Token> r = JsonUtils.fromJson(shr.getResult(), type);
         if (!r.getSucceed()) {
-            throw new ApiException(ErrorCode.valueOf(r.getErrorCode()), r.getErrorDesc());
+            throw new ApiException(ErrorCode.valueOf(r.getErrorCode()),
+                    r.getErrorDesc());
         }
         return r.getData();
     }
