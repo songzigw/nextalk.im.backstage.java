@@ -22,27 +22,27 @@ public class ApiException extends Exception {
 
     private ErrorCode errorCode;
 
-    private String description;
+    private String errorDesc;
 
-    public ApiException(ErrorCode errorCode, String description) {
-        super(errorCode + ": " + description);
+    public ApiException(ErrorCode errorCode, String errorDesc) {
+        super(errorCode + ": " + errorDesc);
         this.errorCode = errorCode;
-        this.description = description;
+        this.errorDesc = errorDesc;
     }
 
-    public ApiException(ErrorCode errorCode, String description,
+    public ApiException(ErrorCode errorCode, String errorDesc,
             Throwable cause) {
-        super(errorCode + ": " + description, cause);
+        super(errorCode + ": " + errorDesc, cause);
         this.errorCode = errorCode;
-        this.description = description;
+        this.errorDesc = errorDesc;
     }
 
     public ErrorCode getErrorCode() {
         return errorCode;
     }
 
-    public String getDescription() {
-        return description;
+    public String getErrorDesc() {
+        return errorDesc;
     }
 
     public static enum ErrorCode {
