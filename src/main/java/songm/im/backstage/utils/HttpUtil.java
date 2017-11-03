@@ -34,8 +34,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import songm.im.backstage.ApiException;
-import songm.im.backstage.ApiException.ErrorCode;
+import songm.im.backstage.HttpConnException;
 import songm.im.backstage.HttpResult;
 
 public class HttpUtil {
@@ -80,16 +79,16 @@ public class HttpUtil {
                 .setDefaultSSLSocketFactory(sslCtx.getSocketFactory());
     }
 
-    public static HttpURLConnection createPostHttpConnection(String appKey,
-            String appSecret, String uri) throws ApiException {
+    public static HttpURLConnection createHttpConnection(String appKey,
+            String appSecret, String url) throws HttpConnException {
         try {
-            return _createPostHttpConnection(appKey, appSecret, uri);
+            return _createHttpConnection(appKey, appSecret, url);
         } catch (MalformedURLException e) {
-            throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
+            throw new HttpConnException(e);
         } catch (ProtocolException e) {
-            throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
+            throw new HttpConnException(e);
         } catch (IOException e) {
-            throw new ApiException(ErrorCode.REQUEST, "HTTP设置错误", e);
+            throw new HttpConnException(e);
         }
     }
 
@@ -98,14 +97,14 @@ public class HttpUtil {
      * 
      * @param appKey
      * @param appSecret
-     * @param uri
+     * @param url
      * @return
      * @throws MalformedURLException
      * @throws IOException
      * @throws ProtocolException
      */
-    private static HttpURLConnection _createPostHttpConnection(String appKey,
-            String appSecret, String uri)
+    private static HttpURLConnection _createHttpConnection(String appKey,
+            String appSecret, String url)
             throws MalformedURLException, IOException, ProtocolException {
         String nonce = String.valueOf(Math.random() * 1000000);
         String timestamp = String.valueOf(System.currentTimeMillis());
@@ -113,12 +112,11 @@ public class HttpUtil {
                 .append(timestamp);
         String sign = CodeUtils.sha1(toSign.toString());
 
-        URL url = new URL(uri);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        URL uRL = new URL(url);
+        HttpURLConnection conn = (HttpURLConnection) uRL.openConnection();
         conn.setUseCaches(false);
         conn.setDoInput(true);
         conn.setDoOutput(true);
-        conn.setRequestMethod("POST");
         conn.setInstanceFollowRedirects(true);
         conn.setConnectTimeout(30000);
 
@@ -133,14 +131,14 @@ public class HttpUtil {
     }
 
     public static void setBodyParameter(StringBuilder sb,
-            HttpURLConnection conn) throws ApiException {
+            HttpURLConnection conn) throws HttpConnException {
         if (conn.getRequestMethod().equals("GET")) {
             return;
         }
         try {
             _setBodyParameter(sb, conn);
         } catch (IOException e) {
-            throw new ApiException(ErrorCode.REQUEST, "Httpd", e);
+            throw new HttpConnException(e);
         }
     }
 
@@ -166,40 +164,46 @@ public class HttpUtil {
         return data;
     }
 
-    public static HttpResult returnResult(HttpURLConnection conn)
-            throws ApiException {
+    public static String returnResult(HttpURLConnection conn)
+            throws HttpConnException {
+        HttpResult r;
         try {
-            return _returnResult(conn);
+            r = _returnResult(conn);
         } catch (IOException e) {
-            throw new ApiException(ErrorCode.REQUEST, "Httpd", e);
+            throw new HttpConnException(e);
         }
+        if (r.getHttpCode() != 200) {
+            throw new HttpConnException(r.getResult());
+        }
+        return r.getResult();
     }
 
     private static HttpResult _returnResult(HttpURLConnection conn)
             throws IOException {
-        String result;
         InputStream input = null;
         if (conn.getResponseCode() == 200) {
             input = conn.getInputStream();
         } else {
             input = conn.getErrorStream();
         }
-        result = new String(readInputStream(input));
-        return new HttpResult(conn.getResponseCode(), result);
+        return new HttpResult(conn.getResponseCode(),
+                new String(readInputStream(input)));
     }
 
     public static void setConnection(String key, String value,
-            HttpURLConnection conn) {
+            HttpURLConnection conn) throws HttpConnException {
         if (key.equals("method")) {
             try {
                 conn.setRequestMethod(value);
             } catch (ProtocolException e) {
-                throw new RuntimeException(e);
+                throw new HttpConnException(e);
             }
         } else if (key.equals("caches")) {
             conn.setUseCaches(Boolean.parseBoolean(value));
         } else if (key.equals("timeout")) {
             conn.setConnectTimeout(Integer.parseInt(value));
+        } else {
+            throw new HttpConnException("HTTP conn options '"+key+"' error");
         }
     }
 }

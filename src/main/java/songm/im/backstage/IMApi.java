@@ -19,6 +19,9 @@ package songm.im.backstage;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.reflect.TypeToken;
 
 import songm.im.backstage.ApiException.ErrorCode;
@@ -36,6 +39,8 @@ import songm.im.backstage.utils.JsonUtils;
  */
 public class IMApi {
 
+    private static final Logger LOG = LoggerFactory.getLogger(IMApi.class);
+    
     private static final String ENCODING = "utf-8";
     private static IMApi instance;
 
@@ -49,7 +54,7 @@ public class IMApi {
         }
         if (instance.uri == null || instance.key == null
                 || instance.secret == null) {
-            throw new IllegalArgumentException("初始化参数错误");
+            throw new IllegalArgumentException("init error");
         }
         return instance;
     }
@@ -79,19 +84,21 @@ public class IMApi {
         sb.append("&nick=").append(CodeUtils.encodURL(nick, ENCODING));
         sb.append("&avatar=").append(CodeUtils.encodURL(avatar, ENCODING));
 
-        String url = uri + "/token?" + sb.toString();
-        HttpURLConnection conn = HttpUtil.createPostHttpConnection(
-                key, secret, url);
-        HttpUtil.setConnection("method", "GET", conn);
-        HttpUtil.setBodyParameter(sb, conn);
-
-        HttpResult shr = HttpUtil.returnResult(conn);
-        if (shr.getHttpCode() != 200) {
-            throw new ApiException(ErrorCode.REQUEST, "请求异常");
+        String res = null;
+        try {
+            String url = uri + "/token?" + sb.toString();
+             HttpURLConnection conn = HttpUtil.createHttpConnection(
+                    key, secret, url);
+            HttpUtil.setConnection("method", "GET", conn);
+            HttpUtil.setBodyParameter(sb, conn);
+            res = HttpUtil.returnResult(conn);
+        } catch (HttpConnException e) {
+            LOG.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
-        Type type = new TypeToken<Result<Token>>() {
-        }.getType();
-        Result<Token> r = JsonUtils.fromJson(shr.getResult(), type);
+        
+        Type type = new TypeToken<Result<Token>>() { }.getType();
+        Result<Token> r = JsonUtils.fromJson(res, type);
         if (!r.getSucceed()) {
             throw new ApiException(ErrorCode.valueOf(r.getErrorCode()),
                     r.getErrorDesc());

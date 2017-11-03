@@ -25,14 +25,14 @@ public class ApiException extends Exception {
     private String errorDesc;
 
     public ApiException(ErrorCode errorCode, String errorDesc) {
-        super(errorCode + ": " + errorDesc);
+        super(String.format("%s %s", errorCode, errorDesc));
         this.errorCode = errorCode;
         this.errorDesc = errorDesc;
     }
 
     public ApiException(ErrorCode errorCode, String errorDesc,
             Throwable cause) {
-        super(errorCode + ": " + errorDesc, cause);
+        super(String.format("%s %s", errorCode, errorDesc), cause);
         this.errorCode = errorCode;
         this.errorDesc = errorDesc;
     }
@@ -46,9 +46,6 @@ public class ApiException extends Exception {
     }
 
     public static enum ErrorCode {
-        /** 请求异常 */
-        REQUEST,
-
         /** API签名失败 */
         SIGN_FAILURE,
     }

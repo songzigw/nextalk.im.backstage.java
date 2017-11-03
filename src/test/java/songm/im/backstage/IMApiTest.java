@@ -50,7 +50,7 @@ public class IMApiTest {
     public void testGetTokenUid10001() {
         String uid = "10001";
         String nick = "张松1";
-        String avatar = "1";
+        String avatar = "//tva1.sinaimg.cn/crop.0.0.200.200.50/006q8Q6bjw8f20zsdem2mj305k05kdfw.jpg";
         Token t = null;
         try {
             t = api.getToken(uid, nick, avatar);
@@ -66,7 +66,7 @@ public class IMApiTest {
     public void testGetTokenUid10002() {
         String uid = "10002";
         String nick = "张松2";
-        String avatar = "2";
+        String avatar = "//tva4.sinaimg.cn/crop.0.0.180.180.180/6d424ea5jw1e8qgp5bmzyj2050050aa8.jpg";
         Token t = null;
         try {
             t = api.getToken(uid, nick, avatar);
