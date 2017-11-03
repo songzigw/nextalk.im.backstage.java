@@ -48,11 +48,18 @@ public class IMApi {
     private String key;
     private String secret;
 
-    public static IMApi getInstance() {
-        if (instance == null) {
-            instance = new IMApi();
+    private static void _instance() {
+        synchronized (IMApi.class) {
+            if (instance == null) {
+                instance = new IMApi();
+            }
         }
-        if (instance.uri == null || instance.key == null
+    }
+    
+    public static IMApi getInstance() {
+        _instance();
+        if (instance.uri == null
+                || instance.key == null
                 || instance.secret == null) {
             throw new IllegalArgumentException("init error");
         }
@@ -60,9 +67,7 @@ public class IMApi {
     }
 
     public static void init(String key, String secret, String uri) {
-        if (instance == null) {
-            instance = new IMApi();
-        }
+        _instance();
         instance.uri = uri;
         instance.key = key;
         instance.secret = secret;
